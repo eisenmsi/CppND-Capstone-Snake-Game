@@ -52,7 +52,7 @@ public:
            const std::size_t grid_width, const std::size_t grid_height);
   ~Renderer();
 
-  void Render(Snake const snake, std::vector<Food> const &foods, std::vector<Obstacle> const &obstacles);
+  void Render(Snake const &snake, std::vector<Food> const &foods, std::vector<Obstacle> const &obstacles);
   void UpdateWindowTitle(int score, int fps);
 
 private:

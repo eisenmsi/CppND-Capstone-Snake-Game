@@ -1,8 +1,23 @@
+/**
+ * @file controller.cpp
+ * @brief Implementation of the Controller class.
+ */
+
 #include "controller.h"
 #include <iostream>
 #include "SDL.h"
 #include "snake.h"
 
+/**
+ * @brief Changes the direction of the snake based on user input.
+ *
+ * This function changes the direction of the snake based on the user's input.
+ * It ensures that the snake cannot immediately reverse its direction, unless it consists of only one segment.
+ *
+ * @param snake The snake object.
+ * @param input The new direction input by the user.
+ * @param opposite The opposite direction of the current snake direction.
+ */
 void Controller::ChangeDirection(Snake &snake, Snake::Direction input,
                                  Snake::Direction opposite) const
 {
@@ -11,6 +26,15 @@ void Controller::ChangeDirection(Snake &snake, Snake::Direction input,
   return;
 }
 
+/**
+ * @brief Handles user input events.
+ *
+ * This function handles user input events such as key presses.
+ * It updates the snake's direction based on the user's input.
+ *
+ * @param running A boolean flag indicating whether the game is running.
+ * @param snake The snake object.
+ */
 void Controller::HandleInput(bool &running, Snake &snake) const
 {
   SDL_Event e;

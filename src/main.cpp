@@ -5,6 +5,11 @@
 #include <fstream>
 #include <string>
 
+/**
+ * @brief The main function is the entry point of the program.
+ *
+ * @return int The exit status of the program.
+ */
 int main()
 {
   constexpr std::size_t kScreenWidth{640};

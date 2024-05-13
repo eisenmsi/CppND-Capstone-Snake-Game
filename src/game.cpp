@@ -1,7 +1,24 @@
+/**
+ * @file game.cpp
+ * @brief Implementation file for the Game class.
+ */
+
 #include "game.h"
 #include <iostream>
 #include "SDL.h"
+#include <thread>
+#include <chrono>
+#include <mutex>
 
+// Mutex for speed variable
+std::mutex speed_mutex;
+
+/**
+ * @brief Constructs a Game object with the given grid width and height.
+ *
+ * @param grid_width The width of the game grid.
+ * @param grid_height The height of the game grid.
+ */
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : grid_width(grid_width), grid_height(grid_height),
       snake(grid_width, grid_height),
@@ -16,6 +33,26 @@ Game::Game(std::size_t grid_width, std::size_t grid_height)
   PlaceObstacles();
 }
 
+/**
+ * @brief Starts the timer thread to reset the boost after a delay.
+ *
+ * @param speed A pointer to the speed variable.
+ */
+void StartBoosterTimerThread(float *speed)
+{
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+  // Lock the mutex before modifying the speed
+  std::lock_guard<std::mutex> guard(speed_mutex);
+  *speed /= 2.0;
+}
+
+/**
+ * @brief Runs the game loop.
+ *
+ * @param controller The controller object for handling user input.
+ * @param renderer The renderer object for rendering the game.
+ * @param target_frame_duration The target duration for each frame in milliseconds.
+ */
 void Game::Run(Controller const &controller, Renderer &renderer,
                std::size_t target_frame_duration)
 {
@@ -60,6 +97,11 @@ void Game::Run(Controller const &controller, Renderer &renderer,
   }
 }
 
+/**
+ * @brief Places a food item on the game grid.
+ *
+ * The food item is placed at a random location that is not occupied by the snake.
+ */
 void Game::PlaceFood()
 {
   int x, y;
@@ -77,6 +119,11 @@ void Game::PlaceFood()
   }
 }
 
+/**
+ * @brief Places fixed and moving obstacles on the game grid.
+ *
+ * Three fixed obstacles and two moving obstacles are placed on the grid.
+ */
 void Game::PlaceObstacles()
 {
   // Place fixed and moving obstacles
@@ -105,6 +152,9 @@ void Game::PlaceObstacles()
   }
 }
 
+/**
+ * @brief Moves the moving obstacles on the game grid.
+ */
 void Game::MoveObstacles()
 {
   for (auto &obs : obstacles)
@@ -113,6 +163,12 @@ void Game::MoveObstacles()
   }
 }
 
+/**
+ * @brief Adds a food item to the game.
+ *
+ * @param x The x-coordinate of the food item.
+ * @param y The y-coordinate of the food item.
+ */
 void Game::AddFood(int x, int y)
 {
   Food food;
@@ -134,13 +190,18 @@ void Game::AddFood(int x, int y)
     break;
   case 2:
     food.scoreValue = 3;
-    food.speedIncrement = -0.01;   // Example of a negative effect
+    food.speedIncrement = -0.01;
     food.color = {0, 0, 255, 255}; // Blue
     break;
   }
   foods.push_back(food);
 }
 
+/**
+ * @brief Updates the game state.
+ *
+ * This function is called in each iteration of the game loop.
+ */
 void Game::Update()
 {
   if (!snake.alive)
@@ -166,9 +227,20 @@ void Game::Update()
     {
       score += it->scoreValue;
       snake.GrowBody();
-      snake.speed += it->speedIncrement;
-      it = foods.erase(it);
+      {
+        std::lock_guard<std::mutex> guard(speed_mutex);
+        snake.speed += it->speedIncrement;
+      }
+      foods.erase(it);
       PlaceFood();
+
+      // Boost
+      {
+        std::lock_guard<std::mutex> guard(speed_mutex);
+        snake.speed *= 2;
+      }
+      std::thread timer(StartBoosterTimerThread, &snake.speed);
+      timer.detach();
     }
     else
     {
@@ -177,5 +249,16 @@ void Game::Update()
   }
 }
 
+/**
+ * @brief Gets the current score.
+ *
+ * @return The current score.
+ */
 int Game::GetScore() const { return score; }
+
+/**
+ * @brief Gets the size of the snake.
+ *
+ * @return The size of the snake.
+ */
 int Game::GetSize() const { return snake.size; }

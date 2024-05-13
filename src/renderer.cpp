@@ -1,7 +1,19 @@
+/**
+ * @file renderer.cpp
+ * @brief Implementation file for the Renderer class.
+ */
+
 #include "renderer.h"
 #include <iostream>
 #include <string>
 
+/**
+ * @brief Constructs a Renderer object.
+ * @param screen_width The width of the screen.
+ * @param screen_height The height of the screen.
+ * @param grid_width The width of the grid.
+ * @param grid_height The height of the grid.
+ */
 Renderer::Renderer(const std::size_t screen_width,
                    const std::size_t screen_height,
                    const std::size_t grid_width, const std::size_t grid_height)
@@ -37,13 +49,22 @@ Renderer::Renderer(const std::size_t screen_width,
   }
 }
 
+/**
+ * @brief Destroys the Renderer object.
+ */
 Renderer::~Renderer()
 {
   SDL_DestroyWindow(sdl_window);
   SDL_Quit();
 }
 
-void Renderer::Render(Snake const snake, std::vector<Food> const &foods, std::vector<Obstacle> const &obstacles)
+/**
+ * @brief Renders the game objects on the screen.
+ * @param snake The snake object to be rendered.
+ * @param foods The vector of food objects to be rendered.
+ * @param obstacles The vector of obstacle objects to be rendered.
+ */
+void Renderer::Render(Snake const &snake, std::vector<Food> const &foods, std::vector<Obstacle> const &obstacles)
 {
   SDL_Rect block;
   block.w = screen_width / grid_width;
@@ -97,6 +118,11 @@ void Renderer::Render(Snake const snake, std::vector<Food> const &foods, std::ve
   SDL_RenderPresent(sdl_renderer);
 }
 
+/**
+ * @brief Updates the window title with the current score and FPS.
+ * @param score The current score.
+ * @param fps The current FPS.
+ */
 void Renderer::UpdateWindowTitle(int score, int fps)
 {
   std::string title{"Snake Score: " + std::to_string(score) + " FPS: " + std::to_string(fps)};

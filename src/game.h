@@ -35,7 +35,7 @@ private:
   void PlaceObstacles();
   void MoveObstacles();
   void Update();
-  void AddFood(int x, int y); // Helper function to add food at specific coordinates
+  void AddFood(int x, int y);
 };
 
 #endif

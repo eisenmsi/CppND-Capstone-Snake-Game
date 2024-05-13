@@ -1,7 +1,15 @@
+/**
+ * @file snake.cpp
+ * @brief Implementation of the Snake class.
+ */
+
 #include "snake.h"
 #include <cmath>
 #include <iostream>
 
+/**
+ * @brief Updates the snake's position and body.
+ */
 void Snake::Update()
 {
   SDL_Point prev_cell{
@@ -21,6 +29,9 @@ void Snake::Update()
   }
 }
 
+/**
+ * @brief Updates the snake's head position based on the current direction.
+ */
 void Snake::UpdateHead()
 {
   switch (direction)
@@ -47,6 +58,11 @@ void Snake::UpdateHead()
   head_y = fmod(head_y + grid_height, grid_height);
 }
 
+/**
+ * @brief Updates the snake's body based on the current head position.
+ * @param current_head_cell The current cell of the snake's head.
+ * @param prev_head_cell The previous cell of the snake's head.
+ */
 void Snake::UpdateBody(SDL_Point &current_head_cell, SDL_Point &prev_head_cell)
 {
   // Add previous head location to vector
@@ -73,9 +89,17 @@ void Snake::UpdateBody(SDL_Point &current_head_cell, SDL_Point &prev_head_cell)
   }
 }
 
+/**
+ * @brief Increases the size of the snake's body.
+ */
 void Snake::GrowBody() { growing = true; }
 
-// Inefficient method to check if cell is occupied by snake.
+/**
+ * @brief Checks if a given cell is occupied by the snake.
+ * @param x The x-coordinate of the cell.
+ * @param y The y-coordinate of the cell.
+ * @return True if the cell is occupied by the snake, false otherwise.
+ */
 bool Snake::SnakeCell(int x, int y)
 {
   if (x == static_cast<int>(head_x) && y == static_cast<int>(head_y))
